@@ -1,5 +1,5 @@
 
-
+import fake_rpigpio as RPi
 import json 
 import sys
 import requests
@@ -21,9 +21,7 @@ from PyQt5.QtWidgets import (
     QRadioButton,
     )
 
-from w1thermsensor import W1ThermSensor, Sensor
-sensor = W1ThermSensor(Sensor.DS18B20, "0517c1fd10ff")
-
+from w1thermsensor.errors import KernelModuleLoadError
 import matplotlib 
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -39,6 +37,30 @@ from arduino_helpers.arduino_helpers import (limpiar_buffer,
                                              create_array_structure,
                                              init_arduinos,
                                              )
+import platform
+import random
+
+if platform.system() == 'Linux' and platform.machine() == 'armv7l':
+    print("Entro")
+    print(f"{platform.system()} {platform.machine() }")
+    from w1thermsensor import W1ThermSensor, Sensor
+else:
+    W1ThermSensor = None
+    Sensor = None
+def get_temperature():
+    if W1ThermSensor is not None:
+        try:
+            sensor = W1ThermSensor(Sensor.DS18B20, "0517c1fd10ff")
+            temperature = sensor.get_temperature()
+            return temperature
+        except w1thermsensor.errors.NoSensorFoundError:
+            pass
+        except NoSensorFoundError:
+            pass
+
+    # Return a random temperature value if no sensor is found
+    return random.uniform(10, 30)
+
 def cov_fq_data(ph_data_list , orp_data_list, nivel_data_list):
     ph = 0
     orp = 0

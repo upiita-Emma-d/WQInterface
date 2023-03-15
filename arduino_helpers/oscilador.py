@@ -1,10 +1,17 @@
-import RPi.GPIO as GPIO
+import platform
 import time
+
 PIN_LIST = [37, 36, 35, 33]
-GPIO.setmode(GPIO.BOARD)
-for PIN in PIN_LIST:
-    GPIO.setup(PIN, GPIO.OUT)
-GPIO.setwarnings(False) 
+if platform.system() == 'Linux' and platform.machine() == 'armv7l':
+    print("*"*10)
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
+    for PIN in PIN_LIST:
+        GPIO.setup(PIN, GPIO.OUT)
+
+else:
+    import fake_rpigpio as GPIO
+#GPIO.setwarnings(False) 
 
 def sleep_ms(tiempo):
     return tiempo / 1000
