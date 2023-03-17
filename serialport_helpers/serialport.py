@@ -28,5 +28,6 @@ def get_serial_ports(self) -> list:
             result.append(port)
         except (OSError, serial.SerialException):
             pass
+    
     return result
 
